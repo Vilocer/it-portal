@@ -1,0 +1,22 @@
+{% load static %}
+<!-- UnsubscribeModal -->
+<div class="modal fade right" id="UnsubscribeModal" tabindex="-1" role="dialog" aria-labelledby="UnsubscribeModal" aria-hidden="true">
+    <div class="modal-dialog modal-side modal-top-right" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title w-100" id="myModalLabel">Отписаться</h4>
+            </div>
+            <div class="modal-body">
+                Вы действительно хотите отписатья от <a href="{{ article.author.get_absolute_url }}" data-toggle="postInfo" data-html="true" title="Открыть профиль">@{% if profile %}{{ profile }}{% else %}{{ article.author }}{% endif %}</a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-black" data-dismiss="modal">Отмена</button>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ subscribe_form.as_p }}
+                    <input type="submit" class="btn btn-danger btn-rounded" name="subscribe" value="Отписаться"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load account %}
+	<main class="mt-5 pt-5 tempting-azure-gradient">
+		<div class="container">
+			{% if user.is_authenticated %}
+			<section class="card wow fadeIn white-text amy-crisp-gradient mb-4">
+				<div class="card-header">
+					<strong>С возвращением, {{ user.username }}!</strong>
+				</div>
+				<div class="card-body">
+					<div class="container">
+						<div class="row">
+							<div class="col-md-4 mb-4 wow fadeIn">
+								<div class="view overlay zoom pt-3">
+									<img src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'img/default_avatar.png'%}{% endif %}" alt="{{ user.profile }}" class="d-flex mb-3 mx-auto z-depth-1 rounded-circle avatar-xl">
+									<div class="mask flex-center white-text">
+										<a href="{{ user.profile.get_absolute_url }}">
+											<i class="fas fa-address-card fa-3x white-text"></i>
+										</a>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-8 mb-4 white-text wow fadeIn">
+								<h2 class="white-text">
+									<a href="{{ user.profile.get_absolute_url  }}" data-toggle="postInfo" data-html="true" title="Открыть профиль" class="white-text">
+										{% if user.first_name %}
+											{{ user.first_name }} {{ user.last_name }}
+										{% else %}
+											{{ user.username }}
+										{% endif %}
+									</a>
+								</h2>
+								{% if user.email %}
+									<p class="white-text">{{ user.email }}</p>
+									<hr>
+								{% endif %}
+								{% if subscribers_value %}
+								<p class="white-text">{{ subscribers_value }}</p>
+								{% endif %}
+								{% if user.profile.status %}
+								<blockquote class="blockquote text-comfort">{{ user.profile.status }}</blockquote>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			{% else %}
+			<section class="card wow fadeIn">
+				<div class="card-body">
+				</div>
+			</section>
+			{% endif %}
+		</div>
+	</main>
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<main class="mt-5 pt-5 near-moon-gradient">
+	<div class="container">
+		<section class="mt-6">
+			<div class="row d-flex justify-content-center">
+				<div class="col-md-10 mb-4">
+					<div class="card wow fadeIn z-depth-4 mb-4">
+						<div class="card-header font-weight-bold">
+							Поиск <i class="fas fa-search"></i>
+						</div>
+						<div class="card-body">
+							<form method="GET">
+								<div class="flex-center md-form">
+									<input type="text" class="form-control col-8" name="q" placeholder="Введите что-нибудь..." value="{% if last_search_q %}{{ last_search_q }}{% endif %}">
+									<button class="btn btn-info">
+										<i class="fas fa-search"></i>
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="card wow fadeIn z-depth-4 mb-4">
+						<div class="card-header">
+							<div class="pull-left">
+								Найдено <strong>{{ articles.count }}</strong>{% if q %} по запросу "{{ q }}"{% endif %}{% if category_slug != 'all' %} в категории {{ category }} {% endif %}:
+							</div>
+							<div class="pull-right">
+								{% if last_search_q %}<a href="/articles/"><i class="fas fa-times"></i></a>{% endif %}
+							</div>
+						</div>
+					</div>
+					<div class="card z-depth-4 mb-4 postCard">
+						{% if articles %}
+							<div class="card-header">
+								{% if articles.count > 1 %}
+								{% if sort == 'asc' %}
+								<a href="?{% for param in request.GET %}{% if param == 'sort' %}{{ pass }}{% elif param == 'category' %}{{ param }}={{ category_slug }}&{% elif param == 'q' %}{{ param }}={{ q }}&{% endif %}{% endfor %}sort=desc"><i class="fas fa-sort-amount-down"></i> от старым к новых</a>
+								{% else %}
+								<a href="?{% for param in request.GET %}{% if param == 'sort' %}{{ pass }}{% elif param == 'category' %}{{ param }}={{ category_slug }}&{% elif param == 'q' %}{{ param }}={{ q }}&{% endif %}{% endfor %}sort=asc"><i class="fas fa-sort-amount-up"></i> от новых к старым</a>
+								{% endif %}
+								{% endif %}
+								<span class="pull-right">
+									<a onclick="listView();">
+										<i id="listButton" class="fas fa-bars blue-text"></i>
+									</a>
+									<a onclick="tileView();">
+										<i id="tileButton" class="fas fa-grip-horizontal"></i>
+									</a>
+								</span>
+							</div>
+							<div class="card-body postList">
+								<div class="postList">
+									{% for article in articles %}
+										<div class="media post mb-4">
+											<div class="imageView">
+												<div class="view overlay mr-1 zoom">
+													<img src="{{ article.image.url }}" class="postImage img-fluid rounded article-md">
+													<div class="mask white-text flex-center">
+														<div>
+															<h5 class="col-md-12 text-center p-4">
+																<strong>{{ article.view }}</strong>
+																<i class="fa fa-eye"></i>
+																<p class="text-comfort" id="article_cat__view">{{ article.category }}</p>
+															</h5>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-8 postLinkInfo">
+												<p class="postTitle">
+													<strong>
+														<a class="postTitle text-comfort" href="{{ article.get_absolute_url }}" data-toggle="postInfo" data-html="true" title="<strong>{{ article.view }} <i class='fa fa-eye mr-2'></i>{{ article.get_likes_count }} <i class='fas fa-heart'></i></strong>">
+															{{ article.title }}
+														</a>
+													</strong>
+												</p>
+												<p>
+													<a href="{{ article.get_absolute_url }}" class="dark-grey-text description">
+														{{ article.content_no_html|truncatewords:25|safe }}{% if article.category %} ({{ article.category.name }}){% endif %}
+													</a>
+												</p>	
+												<p class="mt-1 postAuthor">
+													<a href="{{ article.author.get_absolute_url }}" id="forgotPassword" data-toggle="postInfo" data-html="true" title="Открыть профиль" class="text-comfort">
+														{{ article.author }}
+													</a>
+												</p>
+											</div>
+											<div class="text-right mr-1 light-blue-text postLinkDate">
+												<p>{{ article.timestamp|date:"j E Y"  }} <i class="fa fa-clock"></i></p>
+												<a href="{{ article.category.get_absolute_url }}" class="blue-text" data-toggle="postInfo" data-html="true" title="Стаьти в этой категории...">{{ article.category }}</a>
+											</div>
+										</div>
+										<hr>
+									{% endfor %}
+								</div>
+							</div>
+						{% else %}
+							<div class="card-body p-4">
+								<p class="grey-text text-center m-4">По вашему запросу ничего не найдено, <a href="/articles">ко всем статьям.</a></p>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-lg-2 mb-4">
+					<div class="card cloudy-knoxville-gradient wow fadeIn z-depth-4">
+						<div class="card-header">
+							Категории:
+						</div>
+						<div class="card-body">
+							<ul class="list-unstyled">
+								<li class="media text-truncate">
+									<p><a href="?{% if q %}q={{ q }}&{% endif %}category=all"{% if category_slug == 'all' %} style="border-bottom: 1px solid #33b5e5;" {% endif %}>Все</a></p>
+								</li>
+								{% for category in categories %}
+								<li class="media text-truncate">
+									<p><a href="?{% if q %}q={{ q }}&{% endif %}category={{ category.slug }}"{% if category_slug == category.slug %} style="border-bottom: 1px solid #33b5e5;" {% endif %}>{{ category.name }}</a></p>
+								</li>
+								{% endfor %}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</main>
+<script>
+	function listView(){
+		listButton = $('#listButton');
+		tileButton = $('#tileButton');
+		post = $('.postList .post');
+		postList = $('.postList');
+		imageZone = $('.postLinkImage');
+		image = $('.postImage');
+		info = $('.postLinkInfo');
+		date = $('.postLinkDate');
+
+
+		if(tileButton.hasClass('blue-text')){
+
+			tileButton.removeClass('blue-text');
+			listButton.addClass('blue-text');
+			card = $('.postCard');
+			imgZone = $('.imageView');
+			img = $('.postImage');
+
+			card.fadeOut();
+			card.hide();
+
+			$('.postLinkDate').show();
+			$('.description').show();
+			$('.postLinkInfo').removeClass('col-md-12');
+			$('.post').addClass('media');
+			$('.post').removeClass('col-md-4');
+			$('.postAuthor').removeClass('text-center');
+			$('.postTitle').removeClass('text-center');
+			$('.postList').removeClass('row');
+			$('.postList').removeClass('m-2');
+			img.addClass('article-md');
+			imgZone.removeClass('.col-md-12');
+			imgZone.removeClass('mb-2');
+
+			card.show();
+			card.fadeIn();
+
+		}
+	}
+
+	function tileView(){
+		listButton = $('#listButton');
+		tileButton = $('#tileButton');
+		card = $('.postCard');
+		imgZone = $('.imageView');
+		img = $('.postImage');
+
+		if(listButton.hasClass('blue-text')){
+
+			listButton.removeClass('blue-text');
+			tileButton.addClass('blue-text');
+
+
+			card.fadeOut();
+			card.hide();
+
+			$('.postLinkDate').hide();
+			$('.description').hide();
+			$('.postLinkInfo').addClass('col-md-12');
+			$('.post').removeClass('media');
+			$('.post').addClass('col-md-4');
+			$('.postAuthor').addClass('text-center');
+			$('.postTitle').addClass('text-center');
+			$('.postList').addClass('row');
+			$('.postList').addClass('m-2');
+			img.removeClass('article-md');
+			imgZone.addClass('.col-md-12');
+			imgZone.addClass('mb-2');
+
+			card.show();
+			card.fadeIn();
+
+		}
+	}
+</script>
+{% endblock %}

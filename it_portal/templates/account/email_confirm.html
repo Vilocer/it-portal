@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load account %}
+{% load i18n %}
+{% block content %}
+	<main class="mt-5">
+		<div class="container">
+			<div class="row d-flex justify-content-center">
+				<div class="col-md-7 mt-5 ">
+					<div class="card wow fadeIn p-4 text-center">
+						<div class="card-header">
+							<h5>
+								Подтвердите ваш аккаунт
+							</h5>
+						</div>
+						<div class="card-body">
+							<i class="fas fa-envelope fa-9x text-default mb-4 waves-effect waves-light"></i>
+							<h5>Подтвердите ваш e-mail</h5>
+							<p class="grey-text text-small">
+								{% user_display confirmation.email_address.user as user_display %}
+								{% blocktrans with confirmation.email_address.email as email %}Подтвердите, чтобы использовать адрес <a href="mailto:{{ email }}">{{ email }}</a> для аккаунта {{ user_display }}.{% endblocktrans %}
+							</p>
+							<form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+							{% csrf_token %}
+								<button type="submit" class="btn aqua-gradient">{% trans 'Confirm' %}</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+{% endblock %}

@@ -1,0 +1,30 @@
+	{% load socialaccount %}
+	{% load account %}
+	<div class="modal fade z-depth-4" id="LoginModal" tabindex="1" role="dialog" aria-labelledby="LoginModal">
+		<div class="modal-dialog" role="document">
+			{% include 'account/login_form.html' %}
+		</div>
+	</div>
+	<div class="modal fade" id="SavedLoginModal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="SavedLoginModal">
+		<div class="modal-dialog cascading-modal modal-avatar modal-sm" role="document" >
+			<div class="modal-content rounded">
+				<div class="modal-header">
+					<img src="{{ saved_account.avatar_url }}" alt="avatar" class="rounded-circle avatar-lg">
+				</div>
+				<div class="modal-body text-center mb-1">
+					<h3 class="mt-1 mb-2 font-weight-bold blue-grey-text">{{ saved_account.username }}</h3>
+					<form action="{% url 'account_login' %}"method="post" class="md-form ml-0 mr-0">
+						{% csrf_token %}
+						<input type="hidden" name="login" value="{{ saved_account.username }}">
+						<input type="password" name="password" id="form29" class="form-control form-control-sm ml-0">
+						<label for="form29" class="ml-0">Пароль</label>
+						<input type="hidden" name="remember" value="True">
+						<button class="btn purple-gradient white-text btn-rounded" style="border-radius: 30px;">Войти</button>
+					</form>
+					<div class="text-right blue-text">
+						<a onclick="changeAccount()">Cменить аккаунт </a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>

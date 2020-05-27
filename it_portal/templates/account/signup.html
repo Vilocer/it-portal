@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+	{% load static %}
+	{% load socialaccount %}
+	{% block content %}
+		<main class="text-center mt-5 night-fade-gradient">
+			<div class="container">
+				<div class="row d-flex justify-content-center">
+					<div class="col-md-8 mt-5">
+						<div class="card wow fadeIn cloudy-knoxville-gradient z-depth-4 text-left p-4" style="border-radius: 15px;">
+							<div class="card-body text-center p-lg-5">
+								<h3 class="blue-text mb-4">Регистрация</h3>
+								<form method="post" id="registration_form" action="{% url 'account_signup' %}">
+									{% csrf_token %}
+									{% if form.errors %}
+										{% for error in form.non_field_errors %}
+											<div class="alert alert-danger">
+												<strong>{{ error|escape }}</strong>
+											</div>
+										{% endfor %}
+									{% endif %}
+									<div class="row">
+										<div class="col-md-6">
+											<div class="md-form text-left">
+												<i class="fas fa-address-card prefix"></i>
+												<input type="text" name="first_name" maxlength="30" class="form-control" id="first_name">
+												<label for="first_name">Ваше имя</label>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="md-form">
+												<input type="text" name="last_name" maxlength="30" class="form-control" id="last_name">
+												<label for="last_name">Ваша фамилия</label>
+											</div>
+										</div>
+										{% if form.errors %}
+											{% for field in form %}
+												{% if field.name == 'first_name' or field.name == 'last_name' %}
+													{% for error in field.errors %}
+														<div class="alert alert-danger mr-1">
+															<strong>{{ error|escape }}</strong>
+														</div>
+													{% endfor %}
+												{% endif %}
+											{% endfor %}
+										{% endif %}
+									</div>
+									<div class="md-form mb-4 text-left">
+										<i class="fas fa-user prefix"></i>
+										<input type="text" name="username"class="form-control" id="username">
+										<label for="username">Логин</label>
+										<small class="form-text text-muted text-right">Придумайте логин</small>
+										{% if form.errors %}
+											{% for field in form %}
+												{% if field.name == 'username' %}
+													{% for error in field.errors %}
+														<div class="alert alert-danger">
+															<strong>{{ error|escape }}</strong>
+														</div>
+													{% endfor %}
+												{% endif %}
+											{% endfor %}
+										{% endif %}
+									</div>
+									<div class="md-form mb-4 mt-4 text-left">
+										<i class="fas fa-envelope prefix"></i>
+										<input type="text" name="email"class="form-control" id="email">
+										<label for="email">Ваш e-mail</label>
+										<small class="form-text text-muted text-right">Указывайте настоящий электронный адрес</small>
+										{% if form.errors %}
+											{% for field in form %}
+												{% if field.name == 'email' %}
+													{% for error in field.errors %}
+														<div class="alert alert-danger">
+															<strong>{{ error|escape }}</strong>
+														</div>
+													{% endfor %}
+												{% endif %}
+											{% endfor %}
+										{% endif %}
+									</div>
+									<div class="md-form mb-4 text-left">
+										<i class="fas fa-lock prefix"></i>
+										<input type="password" name="password1" class="form-control" id="password1">
+										<label for="password1">Придумайте пароль</label>
+										<small class="form-text text-muted text-right">Не менее 8 симолов</small>
+										{% if form.errors %}
+											{% for field in form %}
+												{% if field.name == 'password1' %}
+													{% for error in field.errors %}
+														<div class="alert alert-danger">
+															<strong>{{ error|escape }}</strong>
+														</div>
+													{% endfor %}
+												{% endif %}
+											{% endfor %}
+										{% endif %}
+									</div>
+									<div class="md-form mb-4 text-left">
+										<i class="fas fa-key prefix"></i>
+										<input type="password" name="password2" class="form-control" id="password2">
+										<label for="password2">Повторите пароль</label>
+										{% if form.errors %}
+											{% for field in form %}
+												{% if field.name == 'password2' %}
+													{% for error in field.errors %}
+														<div class="alert alert-danger">
+															<strong>{{ error|escape }}</strong>
+														</div>
+													{% endfor %}
+												{% endif %}
+											{% endfor %}
+										{% endif %}
+									</div>
+									<input type="submit" class="btn purple-gradient white-text btn-rounded" value="Зарегистрироваться">
+									<p>или</p>
+									<div class="row flex-center mb-4">
+										<div><a href="{% provider_login_url 'vk' %}" class="social-item vk-social-button"><i class="fab fa-vk"></i></a></div>
+										<div><a href="{% provider_login_url 'google' %}" class="social-item google-social-button"><i class="fab fa-google-plus-g"></i></a></div>
+										<div><a href="{% provider_login_url 'github' %}" class="social-item github-social-button"><i class="fab fa-github"></i></a></div>
+										<div><a href="{% provider_login_url 'facebook' %}" class="social-item facebook-social-button"><i class="fab fa-facebook"></i></a></div>
+									</div>
+									<p>Есть аккаунт? - <a data-toggle="modal" data-target="#LoginModal" href="#">Войти!</a></p>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+{% endblock %}

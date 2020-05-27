@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<main class="mt-5 pt-5 peach-gradient">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card wow fadeIn mb-4">
+                    <div class="card-header">
+                        <div class="pull-left">
+                            Статьи <a href="{{ author.profile.get_absolute_url }}">@{{ author }}</a>
+                        </div>
+                        <div class="pull-right">
+                            ({{ articles.count }})
+                        </div>
+                    </div>
+                </div>
+                {% if articles %}
+                    <div class="row justify-content-center">
+                    {% for article in articles %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card wow fadeIn text-center">
+                                <div class="card-body">
+                                    <div class="view overlay zoom mb-1">
+                                        <img src="{{ article.image.url }}" class="img-fluid">
+                                        <div class="mask flex-center">
+                                            <a href="{{ article.get_absolute_url }}" class="white-text text-comfort">
+                                                {{ article.get_likes_count }} <i class="fas fa-heart"></i><br>
+                                                {{ article.category }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <a href="{{ article.get_absolute_url }}" class=""><p class="my-3 text-comfort">{{ article.title|truncatewords:15 }}</p></a>
+                                    <hr>
+                                    <a href="{{ article.get_absolute_url }}" class="btn btn-outline-primary">Читать статью</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-center grey-text">
+                                <h3>Пусто!</h3>
+                                <i class="fas fa-archive fa-5x my-4"></i>
+                                <p>У данного пользователя нет ни одной статьи.  <a href="{% url 'post' %}">Ко всем статьям.</a></p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

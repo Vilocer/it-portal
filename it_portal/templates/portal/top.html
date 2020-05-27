@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+	<main class="mt-5 pt-5 rare-wind-gradient">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 mb-4 wow fadeIn">
+					<div class="card z-depth-3 white-text peach-gradient text-comfort font-weight-bold">
+						<div class="card-header p-4">
+							<h4>
+								15 лучших авторов, по количеству подписчиков
+								<div class="pull-right">
+									<i class="fas fa-id-card"></i>
+								</div>
+							</h4>
+						</div>
+					</div>
+				</div>
+				{% for PopularProfile in top %}
+				<div class="col-md-4 mb-4 wow fadeIn">
+					<div class="card">
+						<div class="card-body text-center text-comfort">
+							<div class="view overlay zoom pt-3">
+								<img src="{% if PopularProfile.avatar %}{{ PopularProfile.avatar.url }}{% else %}{% static 'img/default_avatar.png'%}{% endif %}" alt="{{ PopularProfile }}" class="d-flex mb-3 mx-auto z-depth-1 rounded-circle avatar-xl">
+								<div class="mask flex-center">
+										<a href="{{ PopularProfile.get_absolute_url }}">
+											<i class="fas fa-address-card fa-3x white-text"></i>
+										</a>
+								</div>
+							</div>
+							<br>
+							<h4 class="mb-4">
+								{% if PopularProfile.first_name is not None and PopularProfile.last_name is not None %}
+								{{ PopularProfile.first_name }} {{ PopularProfile.last_name }}
+								{% else %}
+								{{ PopularProfile }}
+								{% endif %}
+							</h4>
+							<p><strong>{{ PopularProfile.sub_count }} <i class="fas fa-user"></i></strong></p>
+							<p class="mb-4">
+								<strong>{{ PopularProfile.status }}</strong><br>
+							</p>
+							<hr>
+							<a href="{{ PopularProfile.get_absolute_url }}" class="btn btn-info btn-rounded">Открыть профиль</a>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</main>
+{% endblock %}

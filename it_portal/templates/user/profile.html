@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+	<main class="mt-5 pt-5 amy-crisp-gradient">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="card wow fadeIn mb-4">
+						<div class="card-body text-center">
+							<div class="view overlay zoom pt-3" {% if profile.avatar %}data-toggle="modal" data-target="#ImageModal"{% endif %}>
+								<img src="{% if profile.avatar %}{{profile.avatar.url }}{% else %}{% static 'img/default_avatar.png'%}{% endif %}" alt="{{ profile }}" class="d-flex mb-3 mx-auto z-depth-1 avatar-xl rounded-circle">
+								<div class="mask flex-center white-text">
+									<i class="fas fa-address-card fa-3x"></i>
+								</div>
+							</div>
+							{% if user.is_authenticated %}
+							{% if is_sub %}
+							<button class="btn btn-light btn-rounded" data-toggle="modal" data-target="#UnsubscribeModal">Вы подписаны</>
+							{% else %}
+							<form method="post">
+								{% csrf_token %}
+								{{ subscribe_form.as_p }}
+								<input type="submit" class="btn btn-info btn-rounded" value="Подписаться"/>
+							</form>
+							{% endif %}
+							{% else %}
+							<button type="submit" class="btn btn-info btn-rounded" data-toggle="modal" data-target="{% if saved_account is not None %}#SavedLoginModal{% else %}#LoginModal{% endif %}" >Подписаться</button>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="card wow fadeIn mb-4">
+						<div class="card-header font-weight-bold">{{ profile }}:</div>
+						<div class="card-body">
+							<h3 class="">
+								{% if profile.user.first_name %}
+									{{ profile.user.first_name }} {{ profile.user.last_name }}
+								{% else %}
+									{{ profile.user }}
+								{% endif %}
+								<i class="fas fa-user"></i>
+							</h3>
+							<p>{{ profile.user.email }}</p>
+							{% if sub_str %}<a href data-toggle="modal" data-target="#SubModal" class="font-italic mr-4">{{ sub_str }}</a>{% endif %}{% if profileArtCount %}<a href="{% url 'profile_articles' profile.user %}">{{ profileArtCount }}</a>{% endif %}
+							<hr>
+							{% if profile.status %}
+							<br>
+							<blockquote class="blockquote">
+								<p class="text-comfort">
+									{{ profile.status }}
+								</p>
+							</blockquote>
+							{% endif %}
+							<br>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="card wow fadeIn mb-4">
+						<div class="card-header">
+							<p class="pull-left m-0">Самые читаемые статьи</p>
+							<a href="{% url 'profile_articles' profile.user %}" class="pull-right">Показать все</a>
+						</div>
+					</div>
+					{% if profileArticles %}
+					<div class="row justify-content-center">
+						{% for article in profileArticles %}
+						<div class="col-md-4 mb-4">
+							<div class="card wow fadeIn text-center">
+								<div class="card-body">
+									<div class="view overlay zoom mb-1">
+										<img src="{{ article.image.url }}" class="img-fluid">
+										<div class="mask flex-center">
+											<a href="{{ article.get_absolute_url }}" class="white-text text-comfort">
+												{{ article.get_likes_count }} <i class="fas fa-heart"></i><br>
+												{{ article.category }}
+											</a>
+										</div>
+									</div>
+									<a href="{{ article.get_absolute_url }}" class=""><p class="my-3 text-comfort">{{ article.title|truncatewords:15 }}</p></a>
+									<hr>
+									<a href="{{ article.get_absolute_url }}" class="btn btn-outline-primary">Читать статью</a>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+					{% else %}
+					<div class="card wow fadeIn mb-4">
+						<div class="card-body">
+							<p class="m-4 text-center text-muted">
+								<i class="fas fa-book fa-3x m-3"></i><br>
+								У этого пользователя нет ни одной статьи.
+							</p>
+						</div>
+					</div>
+					{% endif %}
+					{% if comments.count != 0 %}
+					<div class="card mb-4">
+						<div class="card-header">
+							Комментарии к статьям: {{ comments.count }}
+						</div>
+						<div class="card-body">
+							{% for comment in comments_split %}
+							<div class="media d-block d-md-flex mt-4">
+								<img src="{{ comment.author.profile.avatar.url }}" alt="{{ comment.author }}" class="d-flex mb-3 mx-auto avatar-md rounded-circle">
+								<div class="media-body text-left ml-md-3 ml-0">
+									<h5 class="mt-0 font-weight-bold">
+										<a href="{{ comment.author.profile.get_absolute_url }}" class="font-weight-normal" data-toggle="postInfo" data-html="true" title="Открыть профиль">{{ comment.author }}</a>
+									</h5>
+									<p class="text-comfort">{{ comment.content|truncatewords:30 }}</p>
+									<a href="{{ comment.article.get_absolute_url }}" class="pull-right">{{ comment.article.title }}</a>
+									<small class="grey-text">
+										{{ comment.timestamp }}
+									</small>
+								</div>
+							</div>
+							<hr>
+							{% endfor %}
+							{% if comments.count > 3 %}
+							<div class="flex-center">
+								<button class="btn btn-outline-blue" data-toggle="modal" data-target="#CommentsModal">Показать все</button>
+							</div>
+							{% endif %}
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+			<div class="modal fade" id="SubModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-scrollable" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLongTitle">{{ sub_str }}</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							{% if Subscribers.count == 0 %}
+								<p class="grey-text text-center">
+									{% if profile.user.username == user.username %}
+										<h5>Пусто!<h5>
+									{% else %}
+										<h5>Пусто.</h5>
+										<h5>Станьте первым подписчиком!</h5>
+									{% endif %}
+								</p>
+							{% else %}
+								{% for ProfileSubscriber in Subscribers %}
+									<div class="row mb-2 ml-2">
+										<div class="col-4 flex-center">
+											<div class="views overlay zoom">
+												<a href="{{ ProfileSubscriber.user.profile.get_absolute_url }}">
+												{% if ProfileSubscriber.user.profile.avatar %}
+													<img src="{{ ProfileSubscriber.user.profile.avatar.url }}" alt="{{ ProfileSubscriber }}" class="rounded-circle avatar-md" >
+												{% else %}
+													<img src="" alt="{% static 'img/default_avatar.png' %}" class="rounded-circle avatar-md" alt="{{ ProfileSubscriber }}">
+												{% endif %}
+												</a>
+											</div>
+										</div>
+										<div class="text-left">
+											<h4>
+												<a href="{{ ProfileSubscriber.user.profile.get_absolute_url }}" data-toggle="postInfo" data-html="true" title="Открыть профиль">
+													{% if ProfileSubscriber.user.first_name %}
+														{{ ProfileSubscriber.user.first_name }}
+														{{ ProfileSubscriber.user.last_name }}
+														<i class="fas fa-user"></i>
+													{% else %}
+														{{ ProfileSubscriber.user.username }}
+														<i class="fas fa-user"></i>
+													{% endif %}
+												</a>
+											</h4>
+											<h5>{{ ProfileSubscriber.user.email }}</h5>
+											<p class="help-text">
+												{{ ProfileSubscriber.date|date:"j E" }}
+											</p>
+										</div>
+									</div>
+									<hr>
+								{% endfor %}
+							{% endif %}
+						</div>
+					</div>
+	  			</div>
+			</div>
+			<div class="modal fade" id="CommentsModal" tabindex="-1" role="dialog" aria-labelledby="Profile comments" aria-hidden="true">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Комментарии: {{ comments.count }}</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							{% for comment in comments %}
+							<div class="media d-block d-md-flex mt-4 p-4">
+								<img src="{{ comment.author.profile.avatar.url }}" alt="{{ comment.author }}" class="d-flex mb-3 mx-auto avatar-md rounded-circle">
+								<div class="media-body text-left ml-md-3 ml-0">
+									<h5 class="mt-0 font-weight-bold">
+										<a href="{{ comment.author.profile.get_absolute_url }}" class="font-weight-normal" data-toggle="postInfo" data-html="true" title="Открыть профиль">{{ comment.author }}</a>
+									</h5>
+									<p class="text-comfort">{{ comment.content }}</p>
+									<a href="{{ comment.article.get_absolute_url }}" class="pull-right" data-toggle="postInfo" data-html="true" title="Читать стататью">{{ comment.article.title }}</a>
+									<small class="grey-text">
+										{{ comment.timestamp }}
+									</small>
+								</div>
+							</div>
+							<hr>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+{% endblock %}

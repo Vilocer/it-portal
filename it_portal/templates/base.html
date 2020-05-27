@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<title>{% if title %}{{ title }}{% else %}IT-blog | Статьи, Уроки, Форум{% endif %}</title>
+	<!-- Font Awesome -->
+	<link href="{% static 'font_awesome/css/all.css' %}" rel="stylesheet"> <!--load all styles -->
+	<!-- Bootstrap core CSS -->
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<!-- Material Design Bootstrap -->
+	<link href="{% static 'css/mdb.min.css' %}" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<link href="https://fonts.googleapis.com/css?family=Comfortaa&display=swap" rel="stylesheet">
+</head>
+<body class="body">
+	<div id="wrap">
+		<header>
+			<nav class="navbar fixed-top navbar-expand-lg navbar-light scrolling-navbar cloudy-knoxville-gradient">
+				<div class="container">
+					<a href="/home" class="animated pulse slow infinite navbar-brand waves-effect ">
+						<strong class="blue-text" style="padding: 5px;">IT-blog.py</strong>
+					</a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navContent" aria-controls="navContent" aria-expanded="false">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div id="navContent" class="collapse navbar-collapse">
+						<ul class="navbar-nav mr-auto mb-1">
+							<li class="nav-item {% if name == 'main' %} active {% endif %}">
+								<a href="/home" class="nav-link waves-effect">Главная</a>
+							</li>
+							<li class="nav-item {% if name == 'post' %} active {% endif %}">
+								<a href="/articles" class="nav-link waves-effect">Статьи</a>
+							</li>
+							<li class="nav-item {% if name == 'lesson' %} active {% endif %}">
+								<a href="/lesson" class="nav-link waves-effect">Уроки</a>
+							</li>
+							<li class="nav-item {% if name == 'top' %} active {% endif %}">
+								<a href="/top" class="nav-link waves-effect">#top</a>
+							</li>
+						</ul>
+						<ul class="navbar-nav nav-flex-icons">
+							{% if user.is_authenticated %}
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown" aria-haspopup="true"aria-expanded="false">
+									<i class="fas fa-user"></i> {{ user.username }}
+								</a>
+								<div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
+									<a class="dropdown-item dropdown-primary" href="{{ user.profile.get_absolute_url }}">Мой профиль</a>
+									<a class="dropdown-item dropdown-primary" href="{% url 'profile_articles' request.user %}">Мои статьи</a>
+									<a class="dropdown-item dropdown-primary" href="{% url 'profile_sub' request.user %}">Мои подписки</a>
+									<a class="dropdown-item dropdown-primary" href="#">Настройки</a>
+									{% if user.is_staff %}<a class="dropdown-item dropdown-primary" href="/admin">Админ-панель</a>{% endif %}
+									<a class="dropdown-item dropdown-primary" href="/logout/">Выйти</a>
+								</div>
+							</li>
+							<hr>
+							{% else %}
+							<li class="nav-item">
+								<a data-toggle="modal" data-target="{% if saved_account is not None %}#SavedLoginModal{% else %}#LoginModal{% endif %}" class="nav-link waves-effect border border-light rounded">
+									<i class="fas fa-key"></i>
+								</a>
+							</li>
+							{% endif %}
+							{% if user.is_authenticated %}
+							<li class="nav-item p-1">
+								<a href="{% url 'new_post' %}" class="nav-link waves-effect rounded dropdown-primary white-text blue">Написать</a>
+							</li>
+							{% endif %}
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</header>
+		<!-- SCRIPTS -->
+		<!-- JQuery -->
+		<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+		<!-- Bootstrap tooltips -->
+		<script src="{% static 'js/popper.min.js' %}"></script>
+		<!-- Bootstrap core JavaScript -->
+		<script src="{% static 'js/bootstrap.min.js' %}"></script>
+		<!-- MDB core JavaScript -->
+		<script src="{% static 'js/mdb.js' %}"></script>
+		<!-- google prettyprint js  -->
+		<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+			{% block content %}
+			{% endblock %}
+		</div>
+		{% include 'account/login_widget.html' %}
+		{% include 'user/UnsubscribeModal.html' %}
+		{% include 'user/ImageModal.html' %}
+
+	<!-- <div class="modal fade top" id="VerifyModal" tabindex="-1" role="dialog" aria-labelledby="Check E-mail Verify" aria-hidden="true">
+		<div class="modal-dialog modal-frame modal-top" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="row d-flex justify-content-center align-items-center">
+						<p class="pt-3 pr-2">
+							Подтвердите свой E-mail для повышенной безопастности
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> -->
+
+	<footer class="page-footer text-center font-small mdb-color darken2 wow fadeIn ">
+		<div class="pt-4">
+			<p>vilocer@it.com</p>
+		</div>
+		<hr class="my-4">
+		<div class="pb-4">
+			<a href="https://www.vk.com/vilocer"><i class="fa fa-vk mr-4"></i></a>
+			<a href="https://www.youtube.com/vilocer"><i class="fa fa-youtube mr-4"></i></a>
+			<a href="https://www.github.com/vilocer"><i class="fa fa-github mr-4"></i></a>
+			<a href="https://www.twitter.com/vilocer"><i class="fa fa-twitter mr-4"></i></a>
+		</div>
+		<div class="footer-copyright py-3">
+			codebyvilocer 2018-2019 ©
+		</div>
+	</footer>
+	<script>
+		//prettyprint Initialization
+		$('pre').addClass('prettyprint');
+		$('.prettyprint').addClass('linenums:1')
+
+		//wow init
+		card = $('.card');
+		card.addClass('z-depth-3 wow fadeIn');
+		new WOW().init();
+
+		function changeAccount(){
+			$('#SavedLoginModal').modal('hide');
+			$('#LoginModal').modal('toggle');
+		}
+		// Tooltips Initialization
+		$('[data-toggle="postInfo"]').tooltip();
+		$('[data-toggle="LikeCount"]').tooltip();
+
+		//set default background
+		mainClasses = $("main").attr("class").split(' ');
+
+		if (mainClasses[2] != null) {
+			$("body").addClass(mainClasses[2]);
+		}
+		else{
+			$("body").addClass("aqua-gradient");
+		}
+
+		function up() {  
+			var top = Math.max(document.body.scrollTop,document.documentElement.scrollTop);  
+				if(top > 0) {  
+				window.scrollBy(0,((top+100)/-10));  
+				t = setTimeout('up()',20);  
+				} else clearTimeout(t);  
+
+			return false;  
+		}
+	</script>
+</body>
+</html>

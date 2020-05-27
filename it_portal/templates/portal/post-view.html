@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+	<div id="back-top">
+		<a href="#" onclick="return up()"><i class="fas fa-chevron-circle-up fa-3x"></i></a>  
+	</div>  
+	<main class="mt-5 pt-5 rare-wind-gradient">
+		<div class="container">
+			<section class="mt-4">
+				<div class="row">
+					<div class="col-lg-9 mb-4">
+						<div class="card mb-4 wow fadeIn z-depth-4">
+							<div class="view overlay rounded zoom">
+								<img src="{{ article.image.url }}" alt="{{ article }}" class="img-fluid">
+								<div class="mask flex-center rgba-green-slight">
+									<h3 class="white-text pr-4 pl-4 text-center">{{ article.title }}</h3>
+								</div>
+							</div>
+						</div>
+						<div class="card mb-4 z-depth-4 p-2 d-block article_card">
+							<div class="card-body article_view">
+								<p class="h4 my-4 text-comfort">
+									{{ article.title }}
+								</p>
+								{% if article.category != None %}
+								<blockquote class="blockquote">
+									<p class="mb-0">
+										{{ article.category }}
+									</p>
+								</blockquote>
+								{% endif %}
+								<p>
+									{{ article.content|safe }}
+									<a name="like"></a>
+								</p>
+							</div>
+						</div>
+						<div class="card wow fadeIn z-depth-4 mb-4">
+							<div class="card-body">
+								<div class="media d-block d-md-flex mt-3">
+									<img src="{{ article.author.avatar.url }}" alt="{{ article.author }}" class="d-flex mb-3 mx-auto z-depth-1 rounded-circle avatar-md">
+									<div class="media-body text-center text-md-left ml-md3 ml-3 mb-4">
+										<h5 class="mt0 font-weight-bold">
+											<a href="{{ article.author.get_absolute_url }}" class="font-weight-bold">{{ article.author }} <i class="far fa-id-card"></i></a>
+										</h5>
+										{{ article.author.user.email }}
+										<br>
+										<strong>{{ subscribers_value }} <i class="fas fa-users"></i></strong>
+									</div>
+									<div class="media-body text-center text-md-right ml-md3 ml-3 align-self-end">
+										<h5 class="mb-4">
+											{{ article.view }} <i class="fas fa-eye"></i>
+											<a {% if user.is_authenticated == False %}data-toggle="modal" data-target="{% if saved_account is not None %}#SavedLoginModal{% else %}#LoginModal{% endif %}"{% else %}href="{% if is_liked %}?action=unlike#like{% else %}?action=like#like{% endif %}" data-toggle="LikeCount" title="{% if is_liked %}Убрать отметку нравится{% else %}Мне нравится{% endif %}"{% endif %} class="text-dark">
+												{{ article.get_likes_count }}
+												{% if is_liked %}<i class="fas fa-heart fa-1x text-danger"></i>{% else %}<i class="far fa-heart"></i>{% endif %}
+											</a>
+										</h5>
+										<p class="text-muted">{{ article.timestamp }} <i class="fa fa-clock"></i></p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card card-comments mb-3 wow fadeIn z-depth-4">
+							<div class="card-header font-italic">{% if comments_count == 0 %}Напишите первый комментарий к этой статье{% else %}{{ comments_str }}{% endif %}</div>
+							<div class="card-body">
+								{% for comment in comments %}
+								<div class="media d-block d-md-flex mt-4">
+									<img src="{{ comment.author.profile.avatar.url }}" alt="{{ comment.author }}" class="d-flex mb-3 mx-auto avatar-md rounded-circle">
+									<div class="media-body text-left ml-md-3 ml-0">
+										<h5 class="mt-0 font-weight-bold">
+											<a href="{{ comment.author.profile.get_absolute_url }}" class="font-weight-normal" data-toggle="postInfo" data-html="true" title="Открыть профиль">{{ comment.author }}</a>
+											<a href="#" class="pull-right">
+												<i class="fa fa-reply"></i>
+											</a>
+										</h5>
+										<p>{{ comment.content }}</p>
+										<div class="modal fade" id="ImageModal{{ comment.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+											<div class="modal-dialog rounded" role="document">
+												<div class="modal-content rounded">
+													<img class="rounded" src="{{ comment.image.url }}" alt="{{ comment.content }} {{ comment.author }}" style="max-width: 100%; max-height: 100%; width: 100% !important;">
+												</div>
+											</div>
+										</div>
+										<img src="{{ comment.image.url }}" alt="{{ comment.content }}" class="img-fluid mb-4" style="max-width: 500px; width: 5rem !important;" data-toggle="modal" data-target="#ImageModal{{ comment.pk }}"/>
+										<p class="blue-text font-small font-weight-normal text-right">
+											{{ comment.timestamp }}
+										</p>
+										{% for reply in replyComments %}
+										{% if reply.comment == comment %}
+										<hr>
+										<div class="media d-block d-md-flex mt-4">
+											<img src="{{ reply.author.profile.avatar.url }}" alt="{{ reply.author }}" class="d-flex mb-3 mx-auto avatar-md rounded-circle">
+											<div class="media-body text-center text-md-left ml-md-3 ml-0">
+												<h5 class="mt-0 font-weight-bold">
+													<a href="{{ reply.author.profile.get_absolute_url }}" class="font-weight-normal" data-toggle="postInfo" data-html="true" title="Открыть профиль">{{ reply.author }}</a>
+													<a href="#" class="pull-right">
+														<i class="fa fa-reply"></i>
+													</a>
+												</h5>
+												<p>{{ reply.content }}</p>
+												<p class="blue-text font-small font-weight-normal pull-right"> {{ reply.timestamp }}
+												</p>
+											</div>
+										</div>
+										{% endif %}
+										{% endfor %}
+									</div>
+								</div>
+								<hr>
+								{% endfor %}		
+								<a name="comments"></a>
+								<form method="post" enctype="multipart/form-data">
+									{% csrf_token %}
+									<div class="form-gropup mt-4">
+										<div class="mb-2">
+											{{ comment_form.errors }}
+											<label for="content">Ваш комментарий</label>
+											<textarea name="content" rows="5" class="form-control"></textarea>
+										</div>
+										<div class="input-group mb-2">
+											<div class="custom-file">
+												<input type="file" class="custom-file-input" name="image" id="ImageInput" aria-describedby="inputGroupFileAddon01" accept="image/*">
+												<label class="custom-file-label" for="ImageInput">Изображение</label>
+											</div>
+										</div>
+										<div class="text-center">
+											<input type="submit" class="btn btn-info btn-sm" name="write_comment" value="Написать"/>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 mb-4">
+						<a name="profileCard"></a>
+						<div class="card mean-fruit-gradient z-depth-4 mb-4 wow fadeIn d-flex justify-content-center">
+							<div class="card-body text-white text-center">
+								<div class="view overlay zoom p-4">
+									<img src="{{ article.author.avatar.url }}" alt="{{ article.author }}" class="d-flex mb-3 mx-auto z-depth-1 rounded-circle img-fluid" style="max-width: 80%;">
+									<div class="mask flex-center">
+									<a href="{{ article.author.get_absolute_url }}" class="white-text">
+										<i class="fas fa-address-card fa-3x"></i>
+									</a>
+									</div>
+								</div>
+								<h4 class="mb-2 mt-2">
+									{{ article.author }}
+								</h4>
+								{% if subscribers_value != '0' %}
+								<p>
+									<strong>{{ subscribers_value }} <i class="fas fa-users"></i></strong>
+								</p>
+								{% endif %}
+							</div>
+							<div class="card-footer text-center">
+								{% if user.is_authenticated %}
+								{% if is_sub %}
+								<button class="btn btn-light btn-rounded" data-toggle="modal" data-target="#UnsubscribeModal">Вы подписаны</>
+								{% else %}
+								<form method="post">
+									{% csrf_token %}
+									{{ subscribe_form.as_p }}
+									<input type="submit" class="btn btn-info btn-rounded" name="subscribe" value="Подписаться"/>
+								</form>
+								{% endif %}
+								{% else %}
+									<button type="submit" class="btn btn-info btn-rounded" data-toggle="modal" data-target="{% if saved_account is not None %}#SavedLoginModal{% else %}#LoginModal{% endif %}" >Подписаться</button>
+								{% endif %}
+							</div>
+						</div>
+						{% if user.is_authenticated == False %}
+						<div class="card z-depth-4 wow fadeIn mb-4" id="profileCard">
+							<div class="card-header font-weight-bold">
+								<a data-toggle="modal" data-target="{% if saved_account is not None %}#SavedLoginModal{% else %}#LoginModal{% endif %}" href="">Login</a> & <a href="/accounts/signup">Register</a>
+							</div>
+							<div class="card-body text-center p-4">
+								<div>
+									<form method="post" action="{% url 'account_login' %}">
+										{% csrf_token %}
+										<label class="grey-text pull-left"><i class="fas fa-user"></i> Логин:</label>
+										<input type="text" class="form-control" name="login">
+
+										<hr>
+
+										<label class="grey-text pull-left"><i class="fas fa-key"></i> Пароль:</label>
+										<input type="password" class="form-control" name="password">
+
+
+										<div class="text-center md-4 mt-4 font-weight-bold">
+											<button class="btn btn-info btn-md">Войти</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						{% endif %}
+						<div class="card z-depth-4 wow fadeIn">
+							<div class="card-header font-weight-bold">
+								Популярные:
+							</div>
+							<div class="card-body">
+								<ul class="list-unstyled">
+									{% for popular_art in popular %}
+									<li class="p-1 text-center">
+										<div class="view overlay zoom mb-1">
+											<img src="{{ popular_art.image.url }}" alt="{{ popular_art }}" class="img-fluid rounded">
+											<div class="mask"></div>
+										</div>
+										<br>
+										<a href="{{ popular_art.get_absolute_url }}" class="p-1" data-toggle="postInfo" data-html="true" title="<strong>{{ popular_art.title }}<br>{{ popular_art.view }} <i class='fa fa-eye mr-2'></i></strong>" data-placement="bottom">{{ popular_art.title|truncatewords:10 }}</a>
+										<hr>
+									</li>
+									{% endfor %}
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</main>
+
+<script>
+	let files = $('input[type="file"]').prop('files');
+	let label = $('label[for="ImageInput"]');
+
+	 console.log(label.value);
+
+</script>
+
+{% endblock %}

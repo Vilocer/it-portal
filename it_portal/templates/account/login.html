@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+{% load static %}
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<link href="{% static 'font_awesome/css/all.css' %}" rel="stylesheet">
+		<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+		<link href="{% static 'css/mdb.min.css' %}" rel="stylesheet">
+		<link rel="stylesheet" href="{% static 'css/style.css' %}">
+		<title>IT-blog | Войти</title>
+		<style>
+			@import url("https://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css");
+			html,body {
+				height: 100%;
+			}
+			#forgotPassword:hover{
+				color: #666666 !important;
+			}
+			#forgotPassword:focus{
+				color: #000000 !important;
+			}
+			.social-item{
+				font-size: 25px;
+				color: #fff;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: -moz-box;
+				display: -ms-flexbox;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				margin: 5px;
+			}
+			.social-item:hover {
+				color: #FFFF;
+				background-color: #000000;
+			}
+			.vk-social-button{
+				background-color: #4C75A3;
+			}
+			.google-social-button{
+				background-color: #DD4B39;
+			}
+			.github-social-button{
+				background-color: #333333;
+			}
+			.facebook-social-button{
+				background-color: #3B5998;
+			}
+			.modal-content {
+				width: 
+			}
+		</style>
+	</head>
+	<body class="stylish-color">
+		{% load socialaccount %}
+		<main class="justify-content-lg-center">
+			<div class="modal-dialog">
+				{% include 'account/login_form.html' %}
+			</div>
+		</main>
+		<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+		<script src="{% static 'js/popper.min.js' %}"></script>
+		<script src="{% static 'js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'js/mdb.js' %}"></script>
+	</body>
+</html>
